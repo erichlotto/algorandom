@@ -2,12 +2,4 @@
 True random number generator (TRNG) using Algorand's blockchain latest block hash as seed
 
 ### Usage:
-```python
-import algorandom
-
-RAND_MIN = 0
-RAND_MAX = 3
-
-while(True):
-  print(algorandom.randint(RAND_MIN, RAND_MAX))
-  ```
+Algorand sdk for python required: `pip3 install py-algorand-sdk`
