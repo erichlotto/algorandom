@@ -1,32 +1,38 @@
-import json
-from urllib.request import Request, urlopen
 import random
+from algosdk.algod import AlgodClient
+from time import sleep
+
+algodAddress = "http://localhost:8080"
+algodToken = "xxxxxxxxxx"
 
 
-# Public Rest API
-END_POINT = "https://api.algoexplorer.io"
+def generate(min, max):
+    algodclient = AlgodClient(algodToken, algodAddress)
+
+    try:
+        # Get last round
+        lastround = algodclient.status().get("lastRound")
+        currentround = lastround
+
+        # Wait for a new round
+        while(lastround == currentround):
+            sleep(1)
+            currentround = algodclient.status().get("lastRound")
+
+        # Get the hash of the new block
+        hash = algodclient.block_info(currentround).get("hash")
+
+    except Exception as e:
+        # Print the error and exit
+        print("Algod error: %s" % e)
+        exit()
+
+    # Apply the new block hash as the seed for the random object
+    random.seed(hash)
+
+    # Returns a random number between min and max
+    print(hash, random.randint(min, max))
 
 
-# Data fetcher
-def _fetch_data(url):
-  req = Request(url)
-  req.add_header('User-Agent', 'curl/7.65.3')
-  return json.load(urlopen(req))
-
-
-# Generate a random integer in range based on latest block hash on Algorand blockchain
-def randint(min, max):
-
-  # get latest block number
-  latest_block = _fetch_data('%s/v1/status' % END_POINT)["round"]
-  
-  # get latest block hash
-  hash = _fetch_data('%s/v1/block/%s' % (END_POINT, latest_block))["hash"]
-  
-  # Apply the current block hash as the seed for the random object
-  random.seed(hash)
-
-  # Returns a random number between min and max
-  return random.randint(min, max)
-
-
+while(True):
+    generate(0, 10)
