@@ -30,6 +30,3 @@ def randint(min, max):
   return random.randint(min, max)
 
 
-# Prints a true random integer between 0 and 10.
-print(randint(0, 10))
-
